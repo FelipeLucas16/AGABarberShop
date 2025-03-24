@@ -3,33 +3,40 @@ package com.devffl.babershop.entities;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_user")
 public class User {
-
-	private Integer id;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String name;
+	private String telefone;
 	private String senha;
 	private String email;
 	
 	public User () {
 	}
 	
-	public User(Integer id, String name, String senha, String email) {
+	public User(Long id, String name,String telefone, String senha, String email) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.senha = senha;
+		this.telefone = telefone;
 		this.email = email;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -60,6 +67,14 @@ public class User {
 	@Override
 	public int hashCode() {
 		return Objects.hash(email, id, name, senha);
+	}
+	
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
 	}
 
 	@Override
