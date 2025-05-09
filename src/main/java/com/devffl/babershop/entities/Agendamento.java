@@ -1,70 +1,50 @@
 package com.devffl.babershop.entities;
 
+import com.devffl.babershop.dto.AgendamentoDto;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 @Entity
-@Table (name = "tb_agendamento")
+@Table(name = "agendamentos")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Agendamento {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String nome;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
+	@Column(nullable = false)
 	private LocalDateTime dataHora;
-	private String status;
-	
-	public Agendamento () {}
 
-	public Agendamento(Long id,String nome, LocalDateTime dataHora, String status) {
-		super();
-		this.id = id;
-		this.nome = nome;
-		this.dataHora = dataHora;
-		this.status = status;
+	@Column(nullable = false)
+	private String status;  // Ex: "AGENDADO", "CANCELADO", "FINALIZADO"
+
+
+	public AgendamentoDto toDto() {
+		return AgendamentoDto.builder()
+				.id(this.id)
+				.userId(this.user.getId())
+				.userEmail(this.user.getEmail())  // Opcional
+				.dataHora(this.dataHora)
+				.status(this.status)
+				.build();
 	}
 
-	public Long getId() {
-		return id;
+	public static Agendamento fromDto(AgendamentoDto dto, User user) {
+		return Agendamento.builder()
+				.user(user)
+				.dataHora(dto.getDataHora())
+				.status(dto.getStatus())
+				.build();
 	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public LocalDateTime getDataHora() {
-		return dataHora;
-	}
-
-	public void setDataHora(LocalDateTime dataHora) {
-		this.dataHora = dataHora;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public Agendamento(Long id, LocalDateTime dataHora) {
-		super();
-		this.id = id;
-		this.dataHora = dataHora;
-	}
-
 }
