@@ -1,5 +1,6 @@
 package com.devffl.babershop.entities;
 
+import com.devffl.babershop.dto.ProdutoDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,16 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String preco;
+    private Double preco;
     private String descricao;
+
+    public ProdutoDto toDto() {
+        return ProdutoDto.builder()
+                .id(this.id)
+                .nome(this.nome)
+                .preco(this.preco)
+                .descricao(this.descricao)
+                .build();
+    }
 
 }

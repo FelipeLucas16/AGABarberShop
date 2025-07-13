@@ -27,14 +27,14 @@ public class Agendamento {
 	private LocalDateTime dataHora;
 
 	@Column(nullable = false)
-	private String status;  // Ex: "AGENDADO", "CANCELADO", "FINALIZADO"
+	private String status;
 
 
 	public AgendamentoDto toDto() {
 		return AgendamentoDto.builder()
 				.id(this.id)
 				.userId(this.user.getId())
-				.userEmail(this.user.getEmail())  // Opcional
+				.userEmail(this.user.getEmail())
 				.dataHora(this.dataHora)
 				.status(this.status)
 				.build();

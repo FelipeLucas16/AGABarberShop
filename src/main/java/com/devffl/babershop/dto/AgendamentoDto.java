@@ -16,5 +16,4 @@ public class AgendamentoDto {
     private String userEmail;
     private LocalDateTime dataHora;
     private String status;
-
 }
