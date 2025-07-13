@@ -2,6 +2,8 @@ package com.devffl.babershop.entities;
 
 import java.util.Objects;
 
+import com.devffl.babershop.dto.AgendamentoDto;
+import com.devffl.babershop.dto.ServicoDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,4 +27,12 @@ public class Servicos {
 	private Double preco;
 	private String descricao;
 
+	public ServicoDto toDto() {
+		return ServicoDto.builder()
+				.id(this.id)
+				.nome(this.nome)
+				.preco(this.preco)
+				.descricao(this.descricao)
+				.build();
+	}
 }

@@ -20,7 +20,11 @@ public class OrdemServico {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @OneToMany
+    @JoinColumn(name = "servicos_id")
     private List<Servicos> servicos;
+    @OneToMany
+    @JoinColumn(name = "pedido_id")
     private List<Produto> produtos;
     private Double valorTotal;
 }
