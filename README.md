@@ -20,6 +20,7 @@ Este é um projeto backend desenvolvido em **Java com Spring Boot** para gerenci
 - Banco de dados (H2 ou PostgreSQL)
 - JWT para autenticação
 - Maven
+- Hibernate
 
 ## 📁 Estrutura do projeto
 
