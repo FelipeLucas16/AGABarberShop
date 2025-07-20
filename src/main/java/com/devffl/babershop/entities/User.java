@@ -1,5 +1,6 @@
 package com.devffl.babershop.entities;
 
+import com.devffl.babershop.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,9 @@ public class User {
 
 	@Column(unique = true)
 	private String email;
-
+	private String nome;
 	private String password;
+	private String telefone;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinTable(name="users_roles",
@@ -35,5 +37,13 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Agendamento> agendamentos = new ArrayList<>();
 
+	public UserDto toDto() {
+		return UserDto.builder()
+				.id(this.id)
+				.nome(this.nome)
+				.telefone(this.telefone)
+				.email(this.email)
+				.build();
+	}
 
 }
