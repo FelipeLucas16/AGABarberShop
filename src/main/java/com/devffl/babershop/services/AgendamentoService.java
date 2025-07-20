@@ -8,6 +8,7 @@ import com.devffl.babershop.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,5 +47,11 @@ public class AgendamentoService {
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
         return agendamentoSalvo.toDto();
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow();
+        agendamentoRepository.delete(agendamento);
     }
 }
