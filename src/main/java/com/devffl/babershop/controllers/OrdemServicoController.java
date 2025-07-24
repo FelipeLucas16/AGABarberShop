@@ -1,7 +1,6 @@
 package com.devffl.babershop.controllers;
 
 import com.devffl.babershop.dto.OrdemServicoDto;
-import com.devffl.babershop.dto.ProdutoDto;
 import com.devffl.babershop.services.OrdemServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +24,11 @@ public class OrdemServicoController {
     public ResponseEntity<OrdemServicoDto> novaOrdemServico(@RequestBody OrdemServicoDto dto) {
         OrdemServicoDto response = ordemServicoService.novaOrdemServico(dto);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        ordemServicoService.deleteById(id);
+        return  ResponseEntity.noContent().build();
     }
 }

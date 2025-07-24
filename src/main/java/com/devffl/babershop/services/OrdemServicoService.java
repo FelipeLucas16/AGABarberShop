@@ -3,10 +3,7 @@ package com.devffl.babershop.services;
 import com.devffl.babershop.dto.OrdemServicoDto;
 import com.devffl.babershop.dto.ProdutoDto;
 import com.devffl.babershop.dto.ServicoDto;
-import com.devffl.babershop.entities.OrdemServico;
-import com.devffl.babershop.entities.Produto;
-import com.devffl.babershop.entities.Servicos;
-import com.devffl.babershop.entities.User;
+import com.devffl.babershop.entities.*;
 import com.devffl.babershop.repositories.OrdemServicoRepository;
 import com.devffl.babershop.repositories.ProdutoRepository;
 import com.devffl.babershop.repositories.ServicosRepository;
@@ -66,5 +63,11 @@ public class OrdemServicoService {
         double totalServicos = servicos.stream().mapToDouble(Servicos::getPreco).sum();
         double totalProdutos = produtos.stream().mapToDouble(Produto::getPreco).sum();
         return totalServicos + totalProdutos;
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada."));
+        ordemServicoRepository.delete(ordemServico);
     }
 }

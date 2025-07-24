@@ -51,7 +51,7 @@ public class AgendamentoService {
 
     @Transactional
     public void deleteById(Long id) {
-        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow();
+        Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Agendamento não encontrado."));
         agendamentoRepository.delete(agendamento);
     }
 }
