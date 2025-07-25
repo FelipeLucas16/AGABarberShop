@@ -27,4 +27,10 @@ public class ProdutoController {
         ProdutoDto response = produtoService.novoProduto(dto);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        produtoService.deleteById(id);
+        return  ResponseEntity.noContent().build();
+    }
 }

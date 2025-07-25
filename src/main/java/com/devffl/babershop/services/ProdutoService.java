@@ -1,6 +1,7 @@
 package com.devffl.babershop.services;
 
 import com.devffl.babershop.dto.ProdutoDto;
+import com.devffl.babershop.entities.OrdemServico;
 import com.devffl.babershop.entities.Produto;
 import com.devffl.babershop.repositories.ProdutoRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,12 @@ public class ProdutoService {
         Produto novoProduto = produtoRepository.save(produto);
 
         return novoProduto.toDto();
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Produto produto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+        produtoRepository.delete(produto);
     }
 
 }
