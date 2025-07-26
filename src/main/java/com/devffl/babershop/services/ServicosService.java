@@ -1,6 +1,7 @@
 package com.devffl.babershop.services;
 
 import com.devffl.babershop.dto.ServicoDto;
+import com.devffl.babershop.entities.Produto;
 import com.devffl.babershop.entities.Servicos;
 import com.devffl.babershop.repositories.ServicosRepository;
 import jakarta.transaction.Transactional;
@@ -35,6 +36,12 @@ public class ServicosService {
 
         return servicoSalvo.toDto();
 
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Servicos servicos = servicosRepository.findById(id).orElseThrow(() -> new RuntimeException("Serviço não encontrado."));
+        servicosRepository.delete(servicos);
     }
 
 }
