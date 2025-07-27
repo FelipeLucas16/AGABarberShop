@@ -5,6 +5,7 @@ import com.devffl.babershop.entities.Agendamento;
 import com.devffl.babershop.entities.User;
 import com.devffl.babershop.repositories.AgendamentoRepository;
 import com.devffl.babershop.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,23 @@ public class AgendamentoService {
     public void deleteById(Long id) {
         Agendamento agendamento = agendamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Agendamento não encontrado."));
         agendamentoRepository.delete(agendamento);
+    }
+
+    @Transactional
+    public AgendamentoDto atualizarAgendamento (Long id, AgendamentoDto agendamentoDto) {
+
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado"));
+
+        User user = userRepository.findById(agendamentoDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        agendamento.setUser(user);
+        agendamento.setDataHora(agendamentoDto.getDataHora());
+        agendamento.setStatus(agendamentoDto.getStatus());
+
+        agendamentoRepository.save(agendamento);
+
+        return agendamento.toDto();
     }
 }

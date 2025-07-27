@@ -32,4 +32,9 @@ public class AgendamentoController {
         agendamentoService.deleteById(id);
         return  ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AgendamentoDto> update(@PathVariable Long id, @RequestBody AgendamentoDto dto) {
+        return ResponseEntity.ok(agendamentoService.atualizarAgendamento(id, dto));
+    }
 }
