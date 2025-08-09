@@ -50,6 +50,8 @@ public class UserService {
         User newUser = User.builder()
                 .email(createUserDto.email())
                 .password(securityConfiguration.passwordEncoder().encode(createUserDto.password()))
+                .nome(createUserDto.nome())
+                .telefone(createUserDto.telefone())
                 .roles(List.of(Role.builder().name(createUserDto.role()).build()))
                 .build();
 
