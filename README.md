@@ -9,7 +9,8 @@ Este é um projeto backend desenvolvido em **Java com Spring Boot** para gerenci
 - ✅ Agendamento de serviços
 - ✅ Cadastro e listagem de produtos
 - ✅ Gerenciamento de serviços oferecidos pela barbearia
-- ✅ Controle de permissões (Role: ADMIN / CLIENTE)
+- ✅ Controle de permissões (Roles: ADMIN / CLIENTE)
+- ✅ Geração de relatórios em PDF
 
 ## 🛠️ Tecnologias utilizadas
 
@@ -21,6 +22,7 @@ Este é um projeto backend desenvolvido em **Java com Spring Boot** para gerenci
 - JWT para autenticação
 - Maven
 - Hibernate
+- JasperReports (para geração de PDFs)
 
 ## 📁 Estrutura do projeto
 
