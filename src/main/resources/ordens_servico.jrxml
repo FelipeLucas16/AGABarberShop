@@ -3,73 +3,79 @@
         xmlns="http://jasperreports.sourceforge.net/jasperreports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-        name="ordens_servico" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+        name="ordens_servico"
+        pageWidth="595" pageHeight="842"
+        columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
         uuid="d0b14c8e-67b0-4c69-bb54-ea56a6f89f75">
 
+    <style name="TabelaCabecalho" fontName="SansSerif" fontSize="12" pdfFontName="Helvetica"/>
+    <style name="TabelaConteudo" fontName="SansSerif" fontSize="10" pdfFontName="Helvetica"/>
+    <style name="Titulo" fontName="SansSerif" fontSize="16" isBold="true" />
+    <style name="Subtitulo" fontName="SansSerif" fontSize="14" isBold="true" />
+
+    <!-- Parâmetros -->
     <parameter name="empresa" class="java.lang.String"/>
     <parameter name="titulo" class="java.lang.String"/>
 
-    <field name="user.nome" class="java.lang.String"/>
+    <!-- Campos -->
+    <field name="user" class="java.lang.String"/>
     <field name="valorTotal" class="java.lang.Double"/>
-    <field name="servicos" class="java.util.List"/>
-    <field name="produtos" class="java.util.List"/>
+    <field name="servicos" class="java.lang.String"/>
+    <field name="produtos" class="java.lang.String"/>
 
+    <!-- Título -->
     <title>
-        <band height="50" >
-            <staticText >
-                <reportElement x="0" y="0" width="555" height="20"/>
-                <textElement textAlignment="Center">
-                    <font size="16" isBold="true"/>
-                </textElement>
-                <text><![CDATA[$P{empresa}]]></text>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="25" style="Titulo"/>
+                <text><![CDATA[Barbearia AGA]]></text>
             </staticText>
-            <staticText >
-                <reportElement x="0" y="25" width="555" height="20"/>
-                <textElement textAlignment="Center">
-                    <font size="14" isBold="true"/>
-                </textElement>
-                <text><![CDATA[$P{titulo}]]></text>
+            <staticText>
+                <reportElement x="0" y="30" width="555" height="20" style="Subtitulo"/>
+                <text><![CDATA[Ordem de Serviço]]></text>
             </staticText>
         </band>
     </title>
 
+    <!-- Cabeçalho das colunas -->
     <columnHeader>
-        <band height="20" >
-            <staticText >
-                <reportElement x="0" y="0" width="100" height="20"/>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="100" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
                 <text><![CDATA[Cliente]]></text>
             </staticText>
-            <staticText >
-                <reportElement x="100" y="0" width="100" height="20"/>
+            <staticText>
+                <reportElement x="100" y="0" width="100" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
                 <text><![CDATA[Total (R$)]]></text>
             </staticText>
-            <staticText >
-                <reportElement x="200" y="0" width="180" height="20"/>
+            <staticText>
+                <reportElement x="200" y="0" width="180" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
                 <text><![CDATA[Serviços]]></text>
             </staticText>
-            <staticText >
-                <reportElement x="380" y="0" width="175" height="20"/>
+            <staticText>
+                <reportElement x="380" y="0" width="175" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
                 <text><![CDATA[Produtos]]></text>
             </staticText>
         </band>
     </columnHeader>
 
+    <!-- Detalhes -->
     <detail>
-        <band height="20" >
-            <textField >
-                <reportElement x="0" y="0" width="100" height="20"/>
-                <textFieldExpression><![CDATA[$F{user.nome}]]></textFieldExpression>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="100" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$F{user}]]></textFieldExpression>
             </textField>
-            <textField >
-                <reportElement x="100" y="0" width="100" height="20"/>
+            <textField pattern="#,##0.00">
+                <reportElement x="100" y="0" width="100" height="20" style="TabelaConteudo"/>
                 <textFieldExpression><![CDATA[$F{valorTotal}]]></textFieldExpression>
             </textField>
-            <textField >
-                <reportElement x="200" y="0" width="180" height="20"/>
+            <textField>
+                <reportElement x="200" y="0" width="180" height="20" style="TabelaConteudo"/>
                 <textFieldExpression><![CDATA[$F{servicos}]]></textFieldExpression>
             </textField>
-            <textField >
-                <reportElement x="380" y="0" width="175" height="20"/>
+            <textField>
+                <reportElement x="380" y="0" width="175" height="20" style="TabelaConteudo"/>
                 <textFieldExpression><![CDATA[$F{produtos}]]></textFieldExpression>
             </textField>
         </band>

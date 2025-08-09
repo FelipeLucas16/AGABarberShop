@@ -1,6 +1,7 @@
 package com.devffl.babershop.services;
 
 import com.devffl.babershop.dto.OrdemServicoDto;
+import com.devffl.babershop.dto.OrdemServicoDtoRelatorio;
 import com.devffl.babershop.dto.ProdutoDto;
 import com.devffl.babershop.dto.ServicoDto;
 import com.devffl.babershop.entities.*;
@@ -85,7 +86,26 @@ public class OrdemServicoService {
     public ResponseEntity<byte[]> gerarRelatorioPdf() {
         try {
             List<OrdemServicoDto> ordens = findAll();
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ordens);
+
+            List<OrdemServicoDtoRelatorio> ordensFormatadas = ordens.stream().map(o -> {
+                String servicosStr = o.getServicos().stream()
+                        .map(s -> s.getNome() + " (R$ " + String.format("%.2f", s.getPreco()) + ")")
+                        .collect(Collectors.joining(", "));
+
+                String produtosStr = o.getProdutos().stream()
+                        .map(p -> p.getNome() + " (R$ " + String.format("%.2f", p.getPreco()) + ")")
+                        .collect(Collectors.joining(", "));
+
+                return new OrdemServicoDtoRelatorio(
+                        o.getId(),
+                        o.getUser().getNome(),
+                        servicosStr,
+                        produtosStr,
+                        o.getValorTotal()
+                );
+            }).collect(Collectors.toList());
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ordensFormatadas);
 
             Map<String, Object> parametros = new HashMap<>();
             parametros.put("empresa", "Barbearia AGA");
@@ -93,7 +113,9 @@ public class OrdemServicoService {
 
             InputStream inputStream = getClass().getResourceAsStream("/ordens_servico.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
+
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             return ResponseEntity.ok()
@@ -106,4 +128,6 @@ public class OrdemServicoService {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+
 }
