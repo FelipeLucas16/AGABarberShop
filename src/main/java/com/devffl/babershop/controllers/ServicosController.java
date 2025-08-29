@@ -32,4 +32,9 @@ public class ServicosController {
         servicosService.deleteById(id);
         return  ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ServicoDto> atualizarServico(@PathVariable Long id, @RequestBody ServicoDto dto) {
+        return ResponseEntity.ok(servicosService.updateServico(id, dto));
+    }
 }

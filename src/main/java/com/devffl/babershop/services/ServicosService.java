@@ -4,6 +4,7 @@ import com.devffl.babershop.dto.ServicoDto;
 import com.devffl.babershop.entities.Produto;
 import com.devffl.babershop.entities.Servicos;
 import com.devffl.babershop.repositories.ServicosRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,4 +45,16 @@ public class ServicosService {
         servicosRepository.delete(servicos);
     }
 
+    @Transactional
+    public ServicoDto updateServico(Long id, ServicoDto servicoDto) {
+        Servicos servicos = servicosRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Serviço não encontrado."));
+
+        servicos.setNome(servicoDto.getNome());
+        servicos.setPreco(servicoDto.getPreco());
+        servicos.setDescricao(servicoDto.getDescricao());
+
+        Servicos servicoSalvo = servicosRepository.save(servicos);
+
+        return servicoSalvo.toDto();
+    }
 }
