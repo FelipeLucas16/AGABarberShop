@@ -9,12 +9,14 @@ import com.devffl.babershop.repositories.UserRepository;
 import com.devffl.babershop.security.authentication.JwtTokenService;
 import com.devffl.babershop.security.config.SecurityConfiguration;
 import com.devffl.babershop.security.userDetails.UserDetailsImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import com.devffl.babershop.entities.User;
 import com.devffl.babershop.entities.Role;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,5 +58,12 @@ public class UserService {
                 .build();
 
         userRepository.save(newUser);
+    }
+
+    public User getAuthenticatedUser() {
+        String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return userRepository.findByEmail(authentication)
+                .orElseThrow(()-> new EntityNotFoundException("Usuário não autorizado"));
     }
 }
