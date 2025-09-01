@@ -44,4 +44,9 @@ public class OrdemServicoController {
     public ResponseEntity<byte[]> gerarRelatorioOrdens() {
         return ordemServicoService.gerarRelatorioPdf();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdemServicoDto> updateOrdemServico(@PathVariable Long id, @RequestBody OrdemServicoDto dto) {
+        return ResponseEntity.ok(ordemServicoService.updateOrdemServico(id, dto));
+    }
 }

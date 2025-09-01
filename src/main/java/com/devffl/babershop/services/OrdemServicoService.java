@@ -9,6 +9,7 @@ import com.devffl.babershop.repositories.OrdemServicoRepository;
 import com.devffl.babershop.repositories.ProdutoRepository;
 import com.devffl.babershop.repositories.ServicosRepository;
 import com.devffl.babershop.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -129,5 +130,29 @@ public class OrdemServicoService {
         }
     }
 
+    @Transactional
+    public OrdemServicoDto updateOrdemServico(Long id, OrdemServicoDto ordemServicoDto) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Ordem de serviço não encontrada"));
 
+        User user = userRepository.findById(ordemServicoDto.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + ordemServicoDto.getUser().getId()));
+
+        List<Long> servicoIds = ordemServicoDto.getServicos().stream()
+                .map(ServicoDto::getId)
+                .collect(Collectors.toList());
+        List<Servicos> servicos = servicosRepository.findAllById(servicoIds);
+
+        List<Long> produtoIds = ordemServicoDto.getProdutos().stream()
+                .map(ProdutoDto::getId)
+                .collect(Collectors.toList());
+        List<Produto> produtos = produtoRepository.findAllById(produtoIds);
+
+        ordemServico.setUser(user);
+        ordemServico.setServicos(servicos);
+        ordemServico.setProdutos(produtos);
+        ordemServico.setValorTotal(calcularValorTotal(servicos, produtos));
+
+        OrdemServico ordemAtualizada = ordemServicoRepository.save(ordemServico);
+        return ordemAtualizada.toDto();
+    }
 }
