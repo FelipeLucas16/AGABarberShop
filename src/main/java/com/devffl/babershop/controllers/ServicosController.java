@@ -21,6 +21,11 @@ public class ServicosController {
         return servicosService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ServicoDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(servicosService.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<ServicoDto> novoServico(@RequestBody ServicoDto dto) {
         ServicoDto response = servicosService.nevoServico(dto);

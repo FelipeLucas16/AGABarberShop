@@ -40,6 +40,14 @@ public class AgendamentoService {
     }
 
     @Transactional
+    public AgendamentoDto findById(Long id) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado"));
+        checarPropriedade(agendamento);
+        return agendamento.toDto();
+    }
+
+    @Transactional
     public AgendamentoDto agendar(AgendamentoDto agendamentoDto) {
         if (agendamentoDto.getDataHora() == null) {
             throw new IllegalArgumentException("Dados inválidos");

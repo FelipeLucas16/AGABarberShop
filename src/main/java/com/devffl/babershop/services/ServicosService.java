@@ -25,6 +25,13 @@ public class ServicosService {
     }
 
     @Transactional
+    public ServicoDto findById(Long id) {
+        Servicos servico = servicosRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado."));
+        return servico.toDto();
+    }
+
+    @Transactional
     public ServicoDto nevoServico(ServicoDto servicoDto) {
 
         Servicos servico = new Servicos();

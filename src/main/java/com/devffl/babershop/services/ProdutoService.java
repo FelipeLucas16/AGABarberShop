@@ -25,6 +25,13 @@ public class ProdutoService {
     }
 
     @Transactional
+    public ProdutoDto findById(Long id) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+        return produto.toDto();
+    }
+
+    @Transactional
     public ProdutoDto novoProduto(ProdutoDto produtoDto) {
         Produto produto = new Produto();
         produto.setId(produtoDto.getId());

@@ -47,6 +47,13 @@ public class OrdemServicoService {
     }
 
     @Transactional
+    public OrdemServicoDto findById(Long id) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ordem de serviço não encontrada."));
+        return ordemServico.toDto();
+    }
+
+    @Transactional
     public OrdemServicoDto novaOrdemServico(OrdemServicoDto ordemServicoDto) {
         User user = userRepository.findById(ordemServicoDto.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + ordemServicoDto.getUser().getId()));

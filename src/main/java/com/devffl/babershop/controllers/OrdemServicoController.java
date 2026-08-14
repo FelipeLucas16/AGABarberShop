@@ -28,6 +28,11 @@ public class OrdemServicoController {
         return ordemServicoService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<OrdemServicoDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(ordemServicoService.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<OrdemServicoDto> novaOrdemServico(@RequestBody OrdemServicoDto dto) {
         OrdemServicoDto response = ordemServicoService.novaOrdemServico(dto);

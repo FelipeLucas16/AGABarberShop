@@ -21,6 +21,11 @@ public class    AgendamentoController {
         return agendamentoService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AgendamentoDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(agendamentoService.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<AgendamentoDto> agendar(@RequestBody AgendamentoDto dto) {
         AgendamentoDto response = agendamentoService.agendar(dto);
