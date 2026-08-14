@@ -4,6 +4,7 @@ import com.devffl.babershop.security.authentication.UserAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,22 +27,6 @@ public class SecurityConfiguration {
             "/users" // Url que usaremos para criar um usuário
     };
 
-    // Endpoints que requerem autenticação para serem acessados
-    public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {
-            "/users/test",
-            "/agendamentos/**"
-    };
-
-    // Endpoints que só podem ser acessados por usuários com permissão de cliente
-    public static final String [] ENDPOINTS_CUSTOMER = {
-            "/users/test/comum"
-    };
-
-    // Endpoints que só podem ser acessados por usuários com permissão de administrador
-    public static final String [] ENDPOINTS_ADMIN = {
-            "/users/test/administrador"
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -50,7 +35,13 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/login", "/users").permitAll()
-                        .requestMatchers("/agendamentos/**").hasAnyRole("CLIENTE", "ADMIN")
+                        .requestMatchers("/users/test/comum").hasRole("COMUM")
+                        .requestMatchers("/users/test/administrador").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/users/test").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/produtos/**", "/servicos/**").authenticated()
+                        .requestMatchers("/produtos/**", "/servicos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/ordemservico/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/agendamento/**").hasAnyRole("COMUM", "ADMINISTRADOR")
                         .anyRequest().authenticated())
                 .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
