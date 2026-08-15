@@ -2,6 +2,7 @@ package com.devffl.babershop.services;
 
 import com.devffl.babershop.dto.OrdemServicoDto;
 import com.devffl.babershop.dto.OrdemServicoDtoRelatorio;
+import com.devffl.babershop.dto.OrdemServicoItemDto;
 import com.devffl.babershop.dto.ProdutoDto;
 import com.devffl.babershop.dto.RelatorioFinanceiroItemDto;
 import com.devffl.babershop.dto.ServicoDto;
@@ -115,6 +116,54 @@ public class OrdemServicoService {
     public void deleteById(Long id) {
         OrdemServico ordemServico = ordemServicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Ordem de serviço não encontrada."));
         ordemServicoRepository.delete(ordemServico);
+    }
+
+    @Transactional
+    public ResponseEntity<byte[]> gerarPdfOrdemServico(Long id) {
+        try {
+            OrdemServico ordemServico = ordemServicoRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Ordem de serviço não encontrada."));
+
+            List<OrdemServicoItemDto> itens = new ArrayList<>();
+            ordemServico.getServicos().forEach(s ->
+                    itens.add(OrdemServicoItemDto.builder().tipo("Serviço").nome(s.getNome()).valor(s.getPreco()).build()));
+            ordemServico.getProdutos().forEach(p ->
+                    itens.add(OrdemServicoItemDto.builder().tipo("Produto").nome(p.getNome()).valor(p.getPreco()).build()));
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itens);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("empresa", "Barbearia AGA");
+            parametros.put("numeroOrdem", String.valueOf(ordemServico.getId()));
+            parametros.put("cliente", ordemServico.getUser().getNome());
+            parametros.put("telefone", ordemServico.getUser().getTelefone());
+            parametros.put("email", ordemServico.getUser().getEmail());
+            parametros.put("dataCriacao", ordemServico.getDataCriacao() != null
+                    ? ordemServico.getDataCriacao().format(formatter) : "-");
+            parametros.put("status", formatarStatus(ordemServico.getStatus()));
+            parametros.put("metodoPagamento", formatarMetodoPagamento(ordemServico.getMetodoPagamento()));
+            parametros.put("valorTotal", ordemServico.getValorTotal());
+
+            InputStream inputStream = getClass().getResourceAsStream("/ordem_servico_unica.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
+
+            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=ordem_servico_" + id + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+
+        } catch (EntityNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @Transactional

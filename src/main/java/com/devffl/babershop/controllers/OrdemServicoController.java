@@ -48,6 +48,11 @@ public class OrdemServicoController {
         return  ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> gerarPdfOrdemServico(@PathVariable Long id) {
+        return ordemServicoService.gerarPdfOrdemServico(id);
+    }
+
     @GetMapping("/relatorio/pdf")
     public ResponseEntity<byte[]> gerarRelatorioOrdens(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
