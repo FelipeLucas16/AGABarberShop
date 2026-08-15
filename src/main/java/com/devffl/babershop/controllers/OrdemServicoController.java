@@ -3,6 +3,7 @@ package com.devffl.babershop.controllers;
 import com.devffl.babershop.dto.OrdemServicoDto;
 import com.devffl.babershop.services.OrdemServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -46,8 +48,10 @@ public class OrdemServicoController {
     }
 
     @GetMapping("/relatorio/pdf")
-    public ResponseEntity<byte[]> gerarRelatorioOrdens() {
-        return ordemServicoService.gerarRelatorioPdf();
+    public ResponseEntity<byte[]> gerarRelatorioOrdens(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
+        return ordemServicoService.gerarRelatorioPdf(inicio, fim);
     }
 
     @PutMapping("/{id}")

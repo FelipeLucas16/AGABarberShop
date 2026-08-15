@@ -22,6 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,9 +95,9 @@ public class OrdemServicoService {
     }
 
     @Transactional
-    public ResponseEntity<byte[]> gerarRelatorioPdf() {
+    public ResponseEntity<byte[]> gerarRelatorioPdf(LocalDate inicio, LocalDate fim) {
         try {
-            List<OrdemServicoDto> ordens = findAll();
+            List<OrdemServico> ordens = buscarOrdensPorPeriodo(inicio, fim);
 
             List<OrdemServicoDtoRelatorio> ordensFormatadas = ordens.stream().map(o -> {
                 String servicosStr = o.getServicos().stream()
@@ -118,6 +122,7 @@ public class OrdemServicoService {
             Map<String, Object> parametros = new HashMap<>();
             parametros.put("empresa", "Barbearia AGA");
             parametros.put("titulo", "Relatório de Ordens de Serviço");
+            parametros.put("periodo", formatarPeriodo(inicio, fim));
 
             InputStream inputStream = getClass().getResourceAsStream("/ordens_servico.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
@@ -135,6 +140,25 @@ public class OrdemServicoService {
             e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
+    }
+
+    private List<OrdemServico> buscarOrdensPorPeriodo(LocalDate inicio, LocalDate fim) {
+        if (inicio == null && fim == null) {
+            return ordemServicoRepository.findAll();
+        }
+        LocalDateTime inicioDateTime = inicio != null ? inicio.atStartOfDay() : LocalDateTime.MIN;
+        LocalDateTime fimDateTime = fim != null ? fim.atTime(LocalTime.MAX) : LocalDateTime.MAX;
+        return ordemServicoRepository.findByDataCriacaoBetween(inicioDateTime, fimDateTime);
+    }
+
+    private String formatarPeriodo(LocalDate inicio, LocalDate fim) {
+        if (inicio == null && fim == null) {
+            return "Todas as ordens";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String de = inicio != null ? inicio.format(formatter) : "início";
+        String ate = fim != null ? fim.format(formatter) : "hoje";
+        return "Período: " + de + " a " + ate;
     }
 
     @Transactional

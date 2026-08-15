@@ -16,6 +16,7 @@
     <!-- Parâmetros -->
     <parameter name="empresa" class="java.lang.String"/>
     <parameter name="titulo" class="java.lang.String"/>
+    <parameter name="periodo" class="java.lang.String"/>
 
     <!-- Campos -->
     <field name="user" class="java.lang.String"/>
@@ -23,9 +24,14 @@
     <field name="servicos" class="java.lang.String"/>
     <field name="produtos" class="java.lang.String"/>
 
+    <!-- Variáveis -->
+    <variable name="totalGeral" class="java.lang.Double" calculation="Sum">
+        <variableExpression><![CDATA[$F{valorTotal}]]></variableExpression>
+    </variable>
+
     <!-- Título -->
     <title>
-        <band height="60">
+        <band height="75">
             <staticText>
                 <reportElement x="0" y="0" width="555" height="25" style="Titulo"/>
                 <text><![CDATA[Barbearia AGA]]></text>
@@ -34,6 +40,10 @@
                 <reportElement x="0" y="30" width="555" height="20" style="Subtitulo"/>
                 <text><![CDATA[Ordem de Serviço]]></text>
             </staticText>
+            <textField>
+                <reportElement x="0" y="52" width="555" height="16" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression>
+            </textField>
         </band>
     </title>
 
@@ -80,5 +90,19 @@
             </textField>
         </band>
     </detail>
+
+    <!-- Total geral -->
+    <summary>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="8" width="100" height="20" style="TabelaCabecalho"/>
+                <text><![CDATA[Total Geral (R$):]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="100" y="8" width="100" height="20" style="TabelaCabecalho"/>
+                <textFieldExpression><![CDATA[$V{totalGeral}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
 
 </jasperReport>

@@ -4,7 +4,9 @@ import com.devffl.babershop.dto.OrdemServicoDto;
 import jakarta.persistence.*;
 import lombok.*;
 import com.devffl.babershop.entities.User;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,9 @@ public class OrdemServico {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime dataCriacao;
     @ManyToMany
     @JoinTable(
             name = "ordem_servico_servicos",
@@ -44,6 +49,7 @@ public class OrdemServico {
         return OrdemServicoDto.builder()
                 .id(this.id)
                 .user(this.user != null ? this.user.toDto() : null)
+                .dataCriacao(this.dataCriacao)
                 .servicos(this.servicos != null ?
                         this.servicos.stream().map(Servicos::toDto).collect(Collectors.toList()) :
                         Collections.emptyList())
