@@ -1,5 +1,6 @@
 package com.devffl.babershop.controllers;
 
+import com.devffl.babershop.dto.FinalizarPagamentoDto;
 import com.devffl.babershop.dto.OrdemServicoDto;
 import com.devffl.babershop.services.OrdemServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,10 @@ public class OrdemServicoController {
     @PutMapping("/{id}")
     public ResponseEntity<OrdemServicoDto> updateOrdemServico(@PathVariable Long id, @RequestBody OrdemServicoDto dto) {
         return ResponseEntity.ok(ordemServicoService.updateOrdemServico(id, dto));
+    }
+
+    @PatchMapping("/{id}/pagamento")
+    public ResponseEntity<OrdemServicoDto> finalizarPagamento(@PathVariable Long id, @RequestBody FinalizarPagamentoDto dto) {
+        return ResponseEntity.ok(ordemServicoService.finalizarPagamento(id, dto.getMetodoPagamento()));
     }
 }

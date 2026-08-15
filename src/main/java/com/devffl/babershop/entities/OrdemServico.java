@@ -1,6 +1,8 @@
 package com.devffl.babershop.entities;
 
 import com.devffl.babershop.dto.OrdemServicoDto;
+import com.devffl.babershop.enums.MetodoPagamento;
+import com.devffl.babershop.enums.StatusPagamento;
 import jakarta.persistence.*;
 import lombok.*;
 import com.devffl.babershop.entities.User;
@@ -44,6 +46,10 @@ public class OrdemServico {
     )
     private List<Produto> produtos;
     private Double valorTotal;
+    @Enumerated(EnumType.STRING)
+    private StatusPagamento status = StatusPagamento.ABERTO;
+    @Enumerated(EnumType.STRING)
+    private MetodoPagamento metodoPagamento;
 
     public OrdemServicoDto toDto() {
         return OrdemServicoDto.builder()
@@ -57,6 +63,8 @@ public class OrdemServico {
                         this.produtos.stream().map(Produto::toDto).collect(Collectors.toList()) :
                         Collections.emptyList())
                 .valorTotal(this.valorTotal)
+                .status(this.status)
+                .metodoPagamento(this.metodoPagamento)
                 .build();
     }
 }

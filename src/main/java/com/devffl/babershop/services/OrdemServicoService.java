@@ -6,6 +6,8 @@ import com.devffl.babershop.dto.ProdutoDto;
 import com.devffl.babershop.dto.RelatorioFinanceiroItemDto;
 import com.devffl.babershop.dto.ServicoDto;
 import com.devffl.babershop.entities.*;
+import com.devffl.babershop.enums.MetodoPagamento;
+import com.devffl.babershop.enums.StatusPagamento;
 import com.devffl.babershop.repositories.OrdemServicoRepository;
 import com.devffl.babershop.repositories.ProdutoRepository;
 import com.devffl.babershop.repositories.ServicosRepository;
@@ -81,9 +83,26 @@ public class OrdemServicoService {
         ordemServico.setServicos(servicos);
         ordemServico.setProdutos(produtos);
         ordemServico.setValorTotal(calcularValorTotal(servicos, produtos));
+        ordemServico.setStatus(StatusPagamento.ABERTO);
 
         OrdemServico ordemSalva = ordemServicoRepository.save(ordemServico);
         return ordemSalva.toDto();
+    }
+
+    @Transactional
+    public OrdemServicoDto finalizarPagamento(Long id, MetodoPagamento metodoPagamento) {
+        if (metodoPagamento == null) {
+            throw new IllegalArgumentException("Informe o método de pagamento para finalizar a ordem de serviço.");
+        }
+
+        OrdemServico ordemServico = ordemServicoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ordem de serviço não encontrada."));
+
+        ordemServico.setStatus(StatusPagamento.PAGO);
+        ordemServico.setMetodoPagamento(metodoPagamento);
+
+        OrdemServico ordemAtualizada = ordemServicoRepository.save(ordemServico);
+        return ordemAtualizada.toDto();
     }
 
     private Double calcularValorTotal(List<Servicos> servicos, List<Produto> produtos) {
