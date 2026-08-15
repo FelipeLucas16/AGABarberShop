@@ -18,6 +18,8 @@
     <parameter name="titulo" class="java.lang.String"/>
     <parameter name="periodo" class="java.lang.String"/>
     <parameter name="faturamentoTotal" class="java.lang.Double"/>
+    <parameter name="totalPago" class="java.lang.Double"/>
+    <parameter name="totalEmAberto" class="java.lang.Double"/>
 
     <!-- Campos -->
     <field name="tipo" class="java.lang.String"/>
@@ -27,7 +29,7 @@
 
     <!-- Título -->
     <title>
-        <band height="95">
+        <band height="135">
             <staticText>
                 <reportElement x="0" y="0" width="555" height="25" style="Titulo"/>
                 <text><![CDATA[Barbearia AGA]]></text>
@@ -47,6 +49,22 @@
             <textField pattern="#,##0.00">
                 <reportElement x="150" y="70" width="100" height="20" style="TabelaCabecalho"/>
                 <textFieldExpression><![CDATA[$P{faturamentoTotal}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="92" width="150" height="20" style="TabelaConteudo"/>
+                <text><![CDATA[Total Pago (R$):]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="150" y="92" width="100" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$P{totalPago}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="270" y="92" width="150" height="20" style="TabelaConteudo"/>
+                <text><![CDATA[Total em Aberto (R$):]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="420" y="92" width="100" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$P{totalEmAberto}]]></textFieldExpression>
             </textField>
         </band>
     </title>

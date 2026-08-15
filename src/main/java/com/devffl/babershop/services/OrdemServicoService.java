@@ -136,7 +136,9 @@ public class OrdemServicoService {
                         o.getUser().getNome(),
                         servicosStr,
                         produtosStr,
-                        o.getValorTotal()
+                        o.getValorTotal(),
+                        formatarStatus(o.getStatus()),
+                        formatarMetodoPagamento(o.getMetodoPagamento())
                 );
             }).collect(Collectors.toList());
 
@@ -174,8 +176,16 @@ public class OrdemServicoService {
                     .mapToDouble(o -> o.getValorTotal() != null ? o.getValorTotal() : 0.0)
                     .sum();
 
+            double totalPago = ordens.stream()
+                    .filter(o -> o.getStatus() == StatusPagamento.PAGO)
+                    .mapToDouble(o -> o.getValorTotal() != null ? o.getValorTotal() : 0.0)
+                    .sum();
+
+            double totalEmAberto = faturamentoTotal - totalPago;
+
             Map<String, RelatorioFinanceiroItemDto> porServico = new LinkedHashMap<>();
             Map<String, RelatorioFinanceiroItemDto> porProduto = new LinkedHashMap<>();
+            Map<String, RelatorioFinanceiroItemDto> porMetodoPagamento = new LinkedHashMap<>();
 
             for (OrdemServico ordem : ordens) {
                 for (Servicos servico : ordem.getServicos()) {
@@ -183,6 +193,10 @@ public class OrdemServicoService {
                 }
                 for (Produto produto : ordem.getProdutos()) {
                     acumularItem(porProduto, "Produto", produto.getNome(), produto.getPreco());
+                }
+                if (ordem.getStatus() == StatusPagamento.PAGO) {
+                    acumularItem(porMetodoPagamento, "Forma de Pagamento",
+                            formatarMetodoPagamento(ordem.getMetodoPagamento()), ordem.getValorTotal());
                 }
             }
 
@@ -193,6 +207,9 @@ public class OrdemServicoService {
             porProduto.values().stream()
                     .sorted(Comparator.comparing(RelatorioFinanceiroItemDto::getValorTotal).reversed())
                     .forEach(itens::add);
+            porMetodoPagamento.values().stream()
+                    .sorted(Comparator.comparing(RelatorioFinanceiroItemDto::getValorTotal).reversed())
+                    .forEach(itens::add);
 
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itens);
 
@@ -201,6 +218,8 @@ public class OrdemServicoService {
             parametros.put("titulo", "Relatório Financeiro");
             parametros.put("periodo", formatarPeriodo(inicio, fim));
             parametros.put("faturamentoTotal", faturamentoTotal);
+            parametros.put("totalPago", totalPago);
+            parametros.put("totalEmAberto", totalEmAberto);
 
             InputStream inputStream = getClass().getResourceAsStream("/relatorio_financeiro.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
@@ -243,6 +262,25 @@ public class OrdemServicoService {
             item.setQuantidade(item.getQuantidade() + 1);
             item.setValorTotal(item.getValorTotal() + valor);
         }
+    }
+
+    private String formatarStatus(StatusPagamento status) {
+        if (status == StatusPagamento.PAGO) {
+            return "Pago";
+        }
+        return "Em aberto";
+    }
+
+    private String formatarMetodoPagamento(MetodoPagamento metodoPagamento) {
+        if (metodoPagamento == null) {
+            return "-";
+        }
+        return switch (metodoPagamento) {
+            case DINHEIRO -> "Dinheiro";
+            case CARTAO_CREDITO -> "Cartão de Crédito";
+            case CARTAO_DEBITO -> "Cartão de Débito";
+            case PIX -> "Pix";
+        };
     }
 
     private String formatarPeriodo(LocalDate inicio, LocalDate fim) {

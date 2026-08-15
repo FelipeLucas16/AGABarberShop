@@ -15,5 +15,7 @@ public class OrdemServicoDtoRelatorio {
     private String servicos;
     private String produtos;
     private Double valorTotal;
+    private String status;
+    private String metodoPagamento;
 
 }
