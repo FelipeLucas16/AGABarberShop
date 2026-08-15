@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="relatorio_financeiro"
+        pageWidth="595" pageHeight="842"
+        columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+        uuid="7c9c9ffb-6e21-4b7a-9e2b-3f6d0f4b9a11">
+
+    <style name="TabelaCabecalho" fontName="SansSerif" fontSize="12" pdfFontName="Helvetica"/>
+    <style name="TabelaConteudo" fontName="SansSerif" fontSize="10" pdfFontName="Helvetica"/>
+    <style name="Titulo" fontName="SansSerif" fontSize="16" isBold="true"/>
+    <style name="Subtitulo" fontName="SansSerif" fontSize="14" isBold="true"/>
+
+    <!-- Parâmetros -->
+    <parameter name="empresa" class="java.lang.String"/>
+    <parameter name="titulo" class="java.lang.String"/>
+    <parameter name="periodo" class="java.lang.String"/>
+    <parameter name="faturamentoTotal" class="java.lang.Double"/>
+
+    <!-- Campos -->
+    <field name="tipo" class="java.lang.String"/>
+    <field name="nome" class="java.lang.String"/>
+    <field name="quantidade" class="java.lang.Long"/>
+    <field name="valorTotal" class="java.lang.Double"/>
+
+    <!-- Título -->
+    <title>
+        <band height="95">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="25" style="Titulo"/>
+                <text><![CDATA[Barbearia AGA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="30" width="555" height="20" style="Subtitulo"/>
+                <text><![CDATA[Relatório Financeiro]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="52" width="555" height="16" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="70" width="150" height="20" style="TabelaCabecalho"/>
+                <text><![CDATA[Faturamento Total (R$):]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="150" y="70" width="100" height="20" style="TabelaCabecalho"/>
+                <textFieldExpression><![CDATA[$P{faturamentoTotal}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- Cabeçalho das colunas -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="80" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
+                <text><![CDATA[Tipo]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="80" y="0" width="260" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
+                <text><![CDATA[Nome]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="340" y="0" width="90" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
+                <text><![CDATA[Quantidade]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="430" y="0" width="125" height="20" style="TabelaCabecalho" backcolor="#E0E0E0" mode="Opaque"/>
+                <text><![CDATA[Faturamento (R$)]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detalhes -->
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="80" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="80" y="0" width="260" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="340" y="0" width="90" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$F{quantidade}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="430" y="0" width="125" height="20" style="TabelaConteudo"/>
+                <textFieldExpression><![CDATA[$F{valorTotal}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+</jasperReport>

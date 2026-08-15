@@ -3,6 +3,7 @@ package com.devffl.babershop.services;
 import com.devffl.babershop.dto.OrdemServicoDto;
 import com.devffl.babershop.dto.OrdemServicoDtoRelatorio;
 import com.devffl.babershop.dto.ProdutoDto;
+import com.devffl.babershop.dto.RelatorioFinanceiroItemDto;
 import com.devffl.babershop.dto.ServicoDto;
 import com.devffl.babershop.entities.*;
 import com.devffl.babershop.repositories.OrdemServicoRepository;
@@ -26,7 +27,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -142,6 +146,61 @@ public class OrdemServicoService {
         }
     }
 
+    @Transactional
+    public ResponseEntity<byte[]> gerarRelatorioFinanceiroPdf(LocalDate inicio, LocalDate fim) {
+        try {
+            List<OrdemServico> ordens = buscarOrdensPorPeriodo(inicio, fim);
+
+            double faturamentoTotal = ordens.stream()
+                    .mapToDouble(o -> o.getValorTotal() != null ? o.getValorTotal() : 0.0)
+                    .sum();
+
+            Map<String, RelatorioFinanceiroItemDto> porServico = new LinkedHashMap<>();
+            Map<String, RelatorioFinanceiroItemDto> porProduto = new LinkedHashMap<>();
+
+            for (OrdemServico ordem : ordens) {
+                for (Servicos servico : ordem.getServicos()) {
+                    acumularItem(porServico, "Serviço", servico.getNome(), servico.getPreco());
+                }
+                for (Produto produto : ordem.getProdutos()) {
+                    acumularItem(porProduto, "Produto", produto.getNome(), produto.getPreco());
+                }
+            }
+
+            List<RelatorioFinanceiroItemDto> itens = new ArrayList<>();
+            porServico.values().stream()
+                    .sorted(Comparator.comparing(RelatorioFinanceiroItemDto::getValorTotal).reversed())
+                    .forEach(itens::add);
+            porProduto.values().stream()
+                    .sorted(Comparator.comparing(RelatorioFinanceiroItemDto::getValorTotal).reversed())
+                    .forEach(itens::add);
+
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itens);
+
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("empresa", "Barbearia AGA");
+            parametros.put("titulo", "Relatório Financeiro");
+            parametros.put("periodo", formatarPeriodo(inicio, fim));
+            parametros.put("faturamentoTotal", faturamentoTotal);
+
+            InputStream inputStream = getClass().getResourceAsStream("/relatorio_financeiro.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
+
+            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=relatorio_financeiro.pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
     private List<OrdemServico> buscarOrdensPorPeriodo(LocalDate inicio, LocalDate fim) {
         if (inicio == null && fim == null) {
             return ordemServicoRepository.findAll();
@@ -149,6 +208,22 @@ public class OrdemServicoService {
         LocalDateTime inicioDateTime = inicio != null ? inicio.atStartOfDay() : LocalDateTime.MIN;
         LocalDateTime fimDateTime = fim != null ? fim.atTime(LocalTime.MAX) : LocalDateTime.MAX;
         return ordemServicoRepository.findByDataCriacaoBetween(inicioDateTime, fimDateTime);
+    }
+
+    private void acumularItem(Map<String, RelatorioFinanceiroItemDto> itens, String tipo, String nome, Double preco) {
+        double valor = preco != null ? preco : 0.0;
+        RelatorioFinanceiroItemDto item = itens.get(nome);
+        if (item == null) {
+            itens.put(nome, RelatorioFinanceiroItemDto.builder()
+                    .tipo(tipo)
+                    .nome(nome)
+                    .quantidade(1L)
+                    .valorTotal(valor)
+                    .build());
+        } else {
+            item.setQuantidade(item.getQuantidade() + 1);
+            item.setValorTotal(item.getValorTotal() + valor);
+        }
     }
 
     private String formatarPeriodo(LocalDate inicio, LocalDate fim) {

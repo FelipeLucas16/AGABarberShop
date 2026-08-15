@@ -54,6 +54,13 @@ public class OrdemServicoController {
         return ordemServicoService.gerarRelatorioPdf(inicio, fim);
     }
 
+    @GetMapping("/relatorio/financeiro")
+    public ResponseEntity<byte[]> gerarRelatorioFinanceiro(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
+        return ordemServicoService.gerarRelatorioFinanceiroPdf(inicio, fim);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<OrdemServicoDto> updateOrdemServico(@PathVariable Long id, @RequestBody OrdemServicoDto dto) {
         return ResponseEntity.ok(ordemServicoService.updateOrdemServico(id, dto));
